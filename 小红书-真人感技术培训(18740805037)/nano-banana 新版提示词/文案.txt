@@ -1,0 +1,4 @@
+如果用我的提示词做手办生成，生成了透明亚克力片的，不是 nano-banana 的锅，是我提示词的锅，去掉这句就好了“Make the PVC material look clear”
+
+新版提示词：
+turn this photo into a character figure. Behind it, place a box with the character’s image printed on it, and a computer showing the Blender modeling process on its screen. In front of the box, add a round plastic base with the character figure standing on it. set the scene indoors if possible

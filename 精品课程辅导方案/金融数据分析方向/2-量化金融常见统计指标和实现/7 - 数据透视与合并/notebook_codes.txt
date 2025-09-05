@@ -1,0 +1,116 @@
+# 数据透视与合并 - Notebook代码片段
+
+# 第1题 - 加载数据
+import pandas as pd
+import numpy as np
+
+# 读取数据，设置千分位符号为逗号
+df = pd.read_csv("某超市销售数据.csv", thousands=',')
+
+print("数据加载完成！")
+print(f"数据形状: {df.shape}")
+print("\n数据前5行:")
+print(df.head())
+
+---
+
+# 第2题 - 数据透视｜默认 - 各省平均销售额
+df.pivot_table(values='销售额', index='省/自治区')
+
+---
+
+# 第3题 - 数据透视｜指定方法 - 各省销售总额
+df.pivot_table(values='销售额', index='省/自治区', aggfunc='sum')
+
+---
+
+# 第4题 - 数据透视｜多方法 - 各省销售总额与平均销售额
+df.pivot_table(values='销售额', index='省/自治区', aggfunc=['sum', 'mean'])
+
+---
+
+# 第5题 - 数据透视｜多指标 - 各省销售总额与利润总额
+df.pivot_table(values=['销售额', '利润'], index='省/自治区', aggfunc='sum')
+
+---
+
+# 第6题 - 数据透视｜多索引 - 各省市与不同类别产品销售总额
+df.pivot_table(values='销售额', index=['省/自治区', '类别'], aggfunc='sum')
+
+---
+
+# 第7题 - 数据透视｜多层 - 各省市不同类别产品销售总额（列透视）
+df.pivot_table(values='销售额', index='省/自治区', columns='类别', aggfunc='sum')
+
+---
+
+# 第8题 - 数据透视｜综合 - 复杂透视表
+df.pivot_table(values=['数量', '销售额'], 
+               index='省/自治区', 
+               columns='类别', 
+               aggfunc=['mean', 'sum'], 
+               margins=True)
+
+---
+
+# 第9题 - 数据透视｜筛选 - 查询办公用品类别
+# 首先创建第8题的透视表
+pivot_result = df.pivot_table(values=['数量', '销售额'], 
+                             index='省/自治区', 
+                             columns='类别', 
+                             aggfunc=['mean', 'sum'], 
+                             margins=True)
+
+# 筛选办公用品类别的数据
+pivot_result.loc[:, (slice(None), '办公用品')]
+
+---
+
+# 第10题 - 数据透视｜逆透视 - 将第5题的透视表进行逆透视
+# 首先创建第5题的透视表
+pivot_5 = df.pivot_table(values=['销售额', '利润'], index='省/自治区', aggfunc='sum')
+
+# 重置索引并进行逆透视
+pivot_5.reset_index().melt(id_vars='省/自治区', var_name='指标', value_name='数值')
+
+---
+
+# 数据合并示例代码
+
+# 示例1：使用merge进行数据合并
+# 创建省份信息表
+province_info = pd.DataFrame({
+    '省/自治区': ['北京', '上海', '广东', '江苏', '浙江'],
+    '地区': ['华北', '华东', '华南', '华东', '华东'],
+    '经济水平': ['发达', '发达', '发达', '发达', '发达']
+})
+
+# 创建省份销售汇总表
+province_sales = df.groupby('省/自治区').agg({
+    '销售额': 'sum',
+    '利润': 'sum'
+}).reset_index()
+
+# 使用merge进行合并
+pd.merge(province_info, province_sales, on='省/自治区', how='inner')
+
+---
+
+# 示例2：使用concat进行数据连接
+# 创建两个相同结构的数据框
+df1 = df[df['省/自治区'] == '北京'].head(3)
+df2 = df[df['省/自治区'] == '上海'].head(3)
+
+# 垂直连接
+pd.concat([df1, df2], ignore_index=True)
+
+---
+
+# 示例3：使用join进行数据连接
+# 设置索引后使用join
+df_indexed = df.set_index('订单ID')
+province_info_indexed = province_info.set_index('省/自治区')
+
+# 注意：join通常用于索引连接
+# 这里演示概念，实际使用需要根据具体需求调整
+

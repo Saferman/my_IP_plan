@@ -1,0 +1,4 @@
+typer
+PyDrive
+socks[asyncio]
+requests[socks]
